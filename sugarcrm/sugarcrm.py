@@ -18,8 +18,8 @@ class Sugarcrm:
     This class is what is used to connect to and interact with the SugarCRM
     server.
     """
-    
-    def __init__(self, url, username, password):
+
+    def __init__(self, url, username, password, use_encrypted_password=True):
         """Constructor for Sugarcrm connection.
 
         Keyword arguments:
@@ -39,7 +39,7 @@ class Sugarcrm:
         self._password = password
 
         # Attempt to login.
-        self._login(username, password)
+        self._login(username, password, use_encrypted_password)
 
         # Dynamically add the API methods to the object.
         for method in ['get_user_id', 'get_user_team_id',
@@ -111,16 +111,20 @@ class Sugarcrm:
         return result
 
 
-    def _login(self, username, password):
+    def _login(self, username, password, use_encrypted_password=True):
         """Estabilsh connection to the server.
 
         Keyword arguments:
         username -- SugarCRM user name.
         password -- plaintext string of the user's password.
         """
+        if use_encrypted_password:
+            password_used = self._passencode(password)
+        else:
+            password_used = password
 
-        args = {'user_auth' : {'user_name' : username,
-                               'password' : _passencode(password)}}
+        args = {'user_auth' : {'user_name': username,
+                               'password': password_used}}
 
         x = self._sendRequest('login', args)
         try:
@@ -137,15 +141,15 @@ class Sugarcrm:
                             [secondary['id']])
 
 
-def _passencode(password):
-    """Returns md5 hash to send as a password.
+    def _passencode(password):
+        """Returns md5 hash to send as a password.
 
-    Keyword arguments:
-    password -- string to be encoded
-    """
+        Keyword arguments:
+        password -- string to be encoded
+        """
 
-    encode = hashlib.md5(password)
-    result = encode.hexdigest()
+        encode = hashlib.md5(password)
+        result = encode.hexdigest()
 
-    return result
+        return result
 
