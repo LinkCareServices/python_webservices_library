@@ -141,7 +141,7 @@ class Sugarcrm:
                             [secondary['id']])
 
 
-    def _passencode(password):
+    def _passencode(self, password):
         """Returns md5 hash to send as a password.
 
         Keyword arguments:
