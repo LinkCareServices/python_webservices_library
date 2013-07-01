@@ -143,5 +143,3 @@ class SugarEntry:
             entries.append(entry)
 
         return entries
-
-
